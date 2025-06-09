@@ -35,7 +35,7 @@ class BatchProcessor:
 
     def _run_inference(self, wrappers):
         for wrapper in wrappers:
-            wrapper.logger.mark("infer_start")
+            wrapper.logger.set_mark("infer_start")
             wrapper.logger.update({
                 "batch_size": len(wrappers),
                 "trigger_type": self.trigger_type,

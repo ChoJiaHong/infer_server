@@ -40,8 +40,8 @@ def serve():
 if __name__ == "__main__":
     #----------服務註冊位置-------------------
     # metrics/registry.py（繼續）
-    """ monitorRegistry.register(name="rps",instance= RPSMonitor(interval=1.0))
-    monitorRegistry.register("global_queue_size", QueueSizeMonitor(globalRequestQueue, sample_interval=0.005, report_interval=1.0)) """
-    #monitorRegistry.start_all()
+    monitorRegistry.register(name="rps",instance= RPSMonitor(interval=1.0))
+    monitorRegistry.register("global_queue_size", QueueSizeMonitor(globalRequestQueue, sample_interval=0.005, report_interval=1.0))
+    monitorRegistry.start_all()
     #----------------------------------------
     serve()
