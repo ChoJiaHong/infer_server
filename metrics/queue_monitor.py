@@ -2,8 +2,11 @@ import threading
 import time
 import os
 import csv
+import logging
 from collections import deque
 from datetime import datetime
+
+logger = logging.getLogger(__name__)
 
 class QueueSizeMonitor:
     def __init__(self, queue, sample_interval=0.005, report_interval=1.0,
@@ -63,7 +66,7 @@ class QueueSizeMonitor:
             line = (f"[QueueMonitor] {timestamp_str} | "
                     f"avg={avg:>5.2f} | max={max_val:>2} | min={min_val:>2} | "
                     f"latest={latest:>2} | zero={zero_count:>3} | zero_ratio={zero_ratio:>6.2f}%")
-            print(line)
+            logger.info(line)
 
             # append to txt log
             with open(self.txt_log_path, "a") as f:

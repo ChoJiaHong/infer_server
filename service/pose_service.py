@@ -5,7 +5,7 @@ from model.batch_worker import BatchWorker
 from processor.batch_processor import BatchProcessor
 from core.request_wrapper import RequestWrapper
 from infra.request_queue import globalRequestQueue  # assume this exists
-from utils.logger import logger_context
+from utils.logger import logger_context, get_logger
 from utils.preprocessor import PosePreprocessor
 from utils.postprocessor import PosePostprocessor
 from metrics.registry import monitorRegistry
@@ -22,6 +22,7 @@ class PoseDetectionService(pose_pb2_grpc.MirrorServicer):
         )
         self.preprocessor = PosePreprocessor()
         self.postprocessor = PosePostprocessor()
+        self.logger = get_logger(__name__)
         threading.Thread(target=self.processor.run_forever, daemon=True).start()
 
     def SkeletonFrame(self, request, context):
@@ -41,13 +42,19 @@ class PoseDetectionService(pose_pb2_grpc.MirrorServicer):
             wrapper = RequestWrapper(frame)
             wrapper.logger = logger  # 將 logger 傳入 wrapper
             self.queue.put(wrapper)
+            self.logger.info(
+                "Request %s enqueued from %s | size=%d",
+                logger.request_id,
+                client_ip,
+                self.queue.qsize(),
+            )
 
             try:
                 result = wrapper.result_queue.get(timeout=2.0)
                 with logger.phase("postprocess"):
                     processed = self.postprocessor.process(result)
             except Exception as e:
-                print("[Error] Timeout waiting for result:", e)
+                self.logger.error("Timeout waiting for result for %s: %s", logger.request_id, e)
                 processed = ""
 
             #logger.write()
