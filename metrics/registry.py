@@ -21,5 +21,9 @@ class MonitorRegistry:
     def queue_monitor(self):
         return self._registry.get("queue_monitor")
 
+    @property
+    def system_monitor(self):
+        return self._registry.get("system_monitor")
+
 # metrics/registry.py（繼續）
 monitorRegistry = MonitorRegistry()

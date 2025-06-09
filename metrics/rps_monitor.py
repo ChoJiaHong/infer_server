@@ -7,6 +7,7 @@ class RPSMonitor:
         self.interval = interval
         self.counter = 0
         self.lock = threading.Lock()
+        self.last_rps = 0
 
     def increment(self):
         with self.lock:
@@ -19,6 +20,11 @@ class RPSMonitor:
                 with self.lock:
                     rps = self.counter
                     self.counter = 0
+                self.last_rps = rps
                 logging.getLogger(__name__).info("[Monitor] RPS = %s", rps)
         threading.Thread(target=loop, daemon=True).start()
+
+    def get_rps(self):
+        """Return the last computed requests-per-second value."""
+        return self.last_rps
 

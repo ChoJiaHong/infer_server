@@ -10,6 +10,8 @@ class BatchProcessor:
         self.batch_size = batch_size
         self.timeout = timeout
         self.logger = get_logger(__name__)
+        self.last_batch_size = 0
+        self.last_trigger = None
 
     def run_forever(self):
         while True:
@@ -32,6 +34,7 @@ class BatchProcessor:
 
         self.trigger_type = "full batch" if len(wrappers) == self.batch_size else "timeout"
         self.trigger_time = time.time() - start_time
+        self.last_trigger = self.trigger_type
         if wrappers:
             self.logger.info(
                 "Batch collected size=%d trigger=%s wait=%.3f", len(wrappers),
@@ -63,8 +66,17 @@ class BatchProcessor:
         )
 
         self._dispatch_results(wrappers, results)
+        self.last_batch_size = len(wrappers)
 
     def _dispatch_results(self, wrappers, results):
         self.logger.debug("Dispatching results to %d wrappers", len(wrappers))
         for wrapper, result in zip(wrappers, results):
             wrapper.result_queue.put(result)
+
+    def get_last_batch_size(self):
+        """Return the size of the most recently processed batch."""
+        return self.last_batch_size
+
+    def get_last_trigger(self):
+        """Return the trigger type of the most recently collected batch."""
+        return self.last_trigger
