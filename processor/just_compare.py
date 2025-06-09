@@ -1,6 +1,6 @@
 import time
 import queue
-from utils.logger import logger_context
+from utils.logger import logger_context, get_logger
 
 class RequestWrapper:
     def __init__(self, frame):
@@ -16,6 +16,7 @@ class BatchProcessor:
         self.queue = queue
         self.batch_size = batch_size
         self.timeout = timeout
+        self.logger = get_logger(__name__)
 
     def run_forever(self):
         while True:
@@ -39,6 +40,12 @@ class BatchProcessor:
             trigger_time = infer_start - start_time
             trigger_type = "full batch" if len(batch_images) == self.batch_size else "timeout"
             batch_size = len(wrappers)
+            self.logger.info(
+                "Batch collected size=%d trigger=%s wait=%.3f",
+                batch_size,
+                trigger_type,
+                trigger_time,
+            )
 
             for wrapper in wrappers:
                 wrapper.logger.mark("infer_start")
@@ -48,12 +55,17 @@ class BatchProcessor:
                     "trigger_time": trigger_time
                 })
 
+            self.logger.info("Inference start batch_size=%d", batch_size)
             with wrappers[0].logger.phase("inference"):
                 results = self.worker.predict(batch_images)
             infer_end = time.time()
+            self.logger.info(
+                "Inference done %.2f ms, total cycle %.2f ms",
+                (infer_end - infer_start)*1000,
+                (time.time() - start_time)*1000,
+            )
 
             for wrapper, result in zip(wrappers, results):
                 wrapper.result_queue.put(result)
 
-            print(f"[Batch] Inference: {(infer_end - infer_start)*1000:.2f} ms, "
-                  f"Total Cycle: {(time.time() - start_time)*1000:.2f} ms")
+            self.logger.debug("Dispatched results for batch of %d", batch_size)

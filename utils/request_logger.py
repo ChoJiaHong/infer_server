@@ -3,6 +3,7 @@ import uuid
 import os
 import csv
 import contextlib
+import logging
 from utils.logger import RequestLogger
 class RequestLogger:
     def __init__(self, log_dir="logs", client_ip="None"):
@@ -54,10 +55,15 @@ class RequestLogger:
             writer.writerow(row)
 
     def print_summary(self):
-        print(f"[{self.request_id}] wait={self.duration('wait'):.2f}ms | "
-              f"infer={self.duration('inference'):.2f}ms | "
-              f"post={self.duration('postprocess'):.2f}ms | "
-              f"total={self.compute_total_duration():.2f}ms")
+        logger = logging.getLogger("request")
+        logger.info(
+            "[%s] wait=%.2fms | infer=%.2fms | post=%.2fms | total=%.2fms",
+            self.request_id,
+            self.duration('wait'),
+            self.duration('inference'),
+            self.duration('postprocess'),
+            self.compute_total_duration(),
+        )
 
     def compute_total_duration(self):
         d = 0

@@ -1,5 +1,6 @@
 import threading
 import time
+import logging
 
 class RPSMonitor:
     def __init__(self, interval=1.0):
@@ -18,6 +19,6 @@ class RPSMonitor:
                 with self.lock:
                     rps = self.counter
                     self.counter = 0
-                print(f"[Monitor] RPS = {rps}")
+                logging.getLogger(__name__).info("[Monitor] RPS = %s", rps)
         threading.Thread(target=loop, daemon=True).start()
 
