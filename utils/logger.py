@@ -4,6 +4,7 @@ import os
 import logging
 from contextlib import contextmanager
 from uuid import uuid4
+from collections import deque
 
 # basic application logging configuration
 LOG_LEVEL = os.environ.get("LOG_LEVEL", "INFO").upper()
@@ -16,13 +17,47 @@ def get_logger(name=None):
     return logging.getLogger(name)
 
 LOG_PATH = "logs/request_trace.csv"
+# number of requests to keep for rolling average
+ROLLING_WINDOW = int(os.environ.get("LOG_ROLLING_WINDOW", 20))
+
 FIELDNAMES = [
     "request_id", "client_ip", "batch_size",
     "wait_ms", "trigger_type", "trigger_time_ms",
-    "inference_ms", "postprocess_ms", "total_ms"
+    "inference_ms", "postprocess_ms", "total_ms",
+    "avg_task_duration_ms", "wait_level", "latency_level", "efficiency_tag"
 ]
 
+
+def get_wait_level(wait_ms: float) -> str:
+    """Classify waiting time into a qualitative level."""
+    if wait_ms < 50:
+        return "low"
+    if wait_ms < 200:
+        return "medium"
+    return "high"
+
+
+def get_latency_level(latency_ms: float) -> str:
+    """Classify total latency into a qualitative level."""
+    if latency_ms < 100:
+        return "low"
+    if latency_ms < 500:
+        return "medium"
+    return "high"
+
+
+def get_efficiency_tag(wait_ms: float, latency_ms: float, avg_ms: float) -> str:
+    """Generate a simple efficiency tag based on wait and latency ratios."""
+    if latency_ms == 0:
+        return "unknown"
+    wait_ratio = wait_ms / latency_ms
+    if wait_ratio < 0.2 and latency_ms <= avg_ms * 1.2:
+        return "efficient"
+    return "inefficient"
+
 class RequestLogger:
+    _recent_durations = deque(maxlen=ROLLING_WINDOW)
+
     def __init__(self):
         self.request_id = uuid4().hex[:8]
         self.start_times = {}
@@ -71,6 +106,18 @@ class RequestLogger:
 
     def write(self):
         self.fields["total_ms"] = (time.time() - self._start_total) * 1000
+
+        # update rolling statistics
+        RequestLogger._recent_durations.append(self.fields["total_ms"])
+        avg_ms = sum(RequestLogger._recent_durations) / len(RequestLogger._recent_durations)
+        self.fields["avg_task_duration_ms"] = avg_ms
+
+        # classification fields
+        self.fields["wait_level"] = get_wait_level(self.fields.get("wait_ms", 0))
+        self.fields["latency_level"] = get_latency_level(self.fields["total_ms"])
+        self.fields["efficiency_tag"] = get_efficiency_tag(
+            self.fields.get("wait_ms", 0), self.fields["total_ms"], avg_ms
+        )
 
         is_new = not os.path.exists(LOG_PATH)
         with open(LOG_PATH, "a", newline="") as f:
