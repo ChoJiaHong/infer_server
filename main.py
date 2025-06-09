@@ -2,6 +2,9 @@ import grpc
 from concurrent import futures
 import time
 from utils.logger import get_logger
+import threading
+import uvicorn
+from admin_api import app as admin_app
 
 from service.pose_service import PoseDetectionService
 from batch_config import global_batch_config
@@ -23,6 +26,11 @@ class HealthServicer(health_pb2_grpc.HealthServicer):
     def Check(self, request, context):
         return health_pb2.HealthCheckResponse(status=health_pb2.HealthCheckResponse.SERVING)
 
+def start_admin_api():
+    def run_api():
+        uvicorn.run(admin_app, host="0.0.0.0", port=8000)
+    threading.Thread(target=run_api, daemon=True).start()
+
 def serve():
     logger = get_logger(__name__)
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=100))
@@ -32,6 +40,7 @@ def serve():
         server
     )
     server.add_insecure_port('[::]:' + settings.gRPC_port)
+    start_admin_api()
     server.start()
     logger.info("gRPC server running on port %s", settings.gRPC_port)
     try:
