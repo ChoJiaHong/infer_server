@@ -1,5 +1,6 @@
 import time
 import queue
+from metrics.event_bus import event_bus
 from utils.logger import logger_context
 from core.request_wrapper import RequestWrapper
 
@@ -53,6 +54,7 @@ class BatchProcessor:
               f"Total Cycle: {(time.time() - (infer_start - self.trigger_time))*1000:.2f} ms")
 
         self._dispatch_results(wrappers, results)
+        event_bus.emit("batch_processed", batch_size=len(wrappers))
 
     def _dispatch_results(self, wrappers, results):
         for wrapper, result in zip(wrappers, results):

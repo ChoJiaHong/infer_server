@@ -8,7 +8,7 @@ from infra.request_queue import globalRequestQueue  # assume this exists
 from utils.logger import logger_context
 from utils.preprocessor import PosePreprocessor
 from utils.postprocessor import PosePostprocessor
-from metrics.registry import monitorRegistry
+from metrics.event_bus import event_bus
 
 class PoseDetectionService(pose_pb2_grpc.MirrorServicer):
     def __init__(self, batch_size, timeout):
@@ -26,9 +26,7 @@ class PoseDetectionService(pose_pb2_grpc.MirrorServicer):
 
     def SkeletonFrame(self, request, context):
         
-        rps = monitorRegistry.get("rps")
-        if rps:
-            rps.increment()
+        event_bus.emit("request_received")
             
         client_ip = context.peer().split(":")[-1].replace("ipv4/", "")
         with logger_context() as logger:
