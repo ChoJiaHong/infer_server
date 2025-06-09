@@ -9,11 +9,8 @@ from config import settings
 
 
 #----------導入註冊服務----------------
-from metrics import registry
 from infra.request_queue import globalRequestQueue
-from metrics.registry import monitorRegistry
-from metrics.rps_monitor import RPSMonitor
-from metrics.queue_monitor import QueueSizeMonitor
+from metrics import setup_default_monitors
 
 #--------------------------------
 
@@ -38,10 +35,5 @@ def serve():
         server.stop(0)
 
 if __name__ == "__main__":
-    #----------服務註冊位置-------------------
-    # metrics/registry.py（繼續）
-    """ monitorRegistry.register(name="rps",instance= RPSMonitor(interval=1.0))
-    monitorRegistry.register("global_queue_size", QueueSizeMonitor(globalRequestQueue, sample_interval=0.005, report_interval=1.0)) """
-    #monitorRegistry.start_all()
-    #----------------------------------------
+    setup_default_monitors(globalRequestQueue)
     serve()
