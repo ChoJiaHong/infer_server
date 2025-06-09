@@ -27,7 +27,7 @@
 ### 1. 匯入模組
 
 ```python
-from utils.request_logger import RequestLogger
+from utils.logger import RequestLogger
 ```
 
 ---
@@ -83,7 +83,7 @@ wrapper.logger.print_summary()   # 輸出精簡摘要到終端
 ```
 project/
 ├── utils/
-│   └── request_logger.py     ← 日誌模組位置
+│   └── logger.py            ← 日誌模組位置
 ├── logs/
 │   └── request_trace.csv     ← 自動產生的追蹤紀錄
 ├── docs/
