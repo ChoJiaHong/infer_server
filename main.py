@@ -4,6 +4,7 @@ import time
 from utils.logger import get_logger
 
 from service.pose_service import PoseDetectionService
+from batch_config import global_batch_config
 from grpc_health.v1 import health_pb2_grpc, health_pb2
 import pose_pb2_grpc
 from config import settings
@@ -27,7 +28,7 @@ def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=100))
     health_pb2_grpc.add_HealthServicer_to_server(HealthServicer(), server)
     pose_pb2_grpc.add_MirrorServicer_to_server(
-        PoseDetectionService(batch_size=settings.batch_size, timeout=settings.queue_timeout),
+        PoseDetectionService(config=global_batch_config),
         server
     )
     server.add_insecure_port('[::]:' + settings.gRPC_port)

@@ -2,13 +2,13 @@ import time
 import queue
 from utils.logger import logger_context, get_logger
 from core.request_wrapper import RequestWrapper
+from batch_config import global_batch_config
 
 class BatchProcessor:
-    def __init__(self, worker, queue, batch_size, timeout):
+    def __init__(self, worker, queue, config=global_batch_config):
         self.worker = worker
         self.queue = queue
-        self.batch_size = batch_size
-        self.timeout = timeout
+        self.config = config
         self.logger = get_logger(__name__)
 
     def run_forever(self):
@@ -22,7 +22,10 @@ class BatchProcessor:
         wrappers = []
         start_time = time.time()
 
-        while len(batch_images) < self.batch_size and (time.time() - start_time) < self.timeout:
+        batch_size = self.config.batch_size
+        timeout = self.config.queue_timeout
+
+        while len(batch_images) < batch_size and (time.time() - start_time) < timeout:
             try:
                 wrapper = self.queue.get(timeout=0.01)
                 batch_images.append(wrapper.frame)
@@ -30,7 +33,7 @@ class BatchProcessor:
             except queue.Empty:
                 continue
 
-        self.trigger_type = "full batch" if len(wrappers) == self.batch_size else "timeout"
+        self.trigger_type = "full batch" if len(wrappers) == batch_size else "timeout"
         self.trigger_time = time.time() - start_time
         if wrappers:
             self.logger.info(

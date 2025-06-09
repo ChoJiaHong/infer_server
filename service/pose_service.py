@@ -3,6 +3,7 @@ import pose_pb2_grpc
 import pose_pb2
 from model.batch_worker import BatchWorker
 from processor.batch_processor import BatchProcessor
+from batch_config import BatchConfig, global_batch_config
 from core.request_wrapper import RequestWrapper
 from infra.request_queue import globalRequestQueue  # assume this exists
 from utils.logger import logger_context, get_logger
@@ -11,14 +12,13 @@ from utils.postprocessor import PosePostprocessor
 from metrics.registry import monitorRegistry
 
 class PoseDetectionService(pose_pb2_grpc.MirrorServicer):
-    def __init__(self, batch_size, timeout):
+    def __init__(self, config: BatchConfig = global_batch_config):
         self.worker = BatchWorker()
         self.queue = globalRequestQueue
         self.processor = BatchProcessor(
             worker=self.worker,
             queue=self.queue,
-            batch_size=batch_size,
-            timeout=timeout
+            config=config
         )
         self.preprocessor = PosePreprocessor()
         self.postprocessor = PosePostprocessor()
