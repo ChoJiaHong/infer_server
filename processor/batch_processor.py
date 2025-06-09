@@ -1,12 +1,12 @@
 import time
 import queue
-from metrics.event_bus import event_bus
 from utils.logger import logger_context
 from core.request_wrapper import RequestWrapper
+from core.predict_pool import PredictThreadPool
 
 class BatchProcessor:
-    def __init__(self, worker, queue, batch_size, timeout):
-        self.worker = worker
+    def __init__(self, predict_pool: PredictThreadPool, queue, batch_size, timeout):
+        self.predict_pool = predict_pool
         self.queue = queue
         self.batch_size = batch_size
         self.timeout = timeout
@@ -44,18 +44,6 @@ class BatchProcessor:
             })
 
         batch_images = [w.frame for w in wrappers]
-        infer_start = time.time()
+        self.predict_pool.submit(batch_images, wrappers, self.trigger_time)
+        return
 
-        with wrappers[0].logger.phase("inference"):
-            results = self.worker.predict(batch_images)
-
-        infer_end = time.time()
-        print(f"[Batch] Inference: {(infer_end - infer_start)*1000:.2f} ms, "
-              f"Total Cycle: {(time.time() - (infer_start - self.trigger_time))*1000:.2f} ms")
-
-        self._dispatch_results(wrappers, results)
-        event_bus.emit("batch_processed", batch_size=len(wrappers))
-
-    def _dispatch_results(self, wrappers, results):
-        for wrapper, result in zip(wrappers, results):
-            wrapper.result_queue.put(result)

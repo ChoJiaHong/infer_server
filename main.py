@@ -22,8 +22,12 @@ def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=100))
     health_pb2_grpc.add_HealthServicer_to_server(HealthServicer(), server)
     pose_pb2_grpc.add_MirrorServicer_to_server(
-        PoseDetectionService(batch_size=settings.batch_size, timeout=settings.queue_timeout),
-        server
+        PoseDetectionService(
+            batch_size=settings.batch_size,
+            timeout=settings.queue_timeout,
+            num_workers=settings.num_workers,
+        ),
+        server,
     )
     server.add_insecure_port('[::]:' + settings.gRPC_port)
     server.start()

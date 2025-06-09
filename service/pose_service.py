@@ -1,8 +1,8 @@
 import threading
 import pose_pb2_grpc
 import pose_pb2
-from model.batch_worker import BatchWorker
 from processor.batch_processor import BatchProcessor
+from core.predict_pool import PredictThreadPool
 from core.request_wrapper import RequestWrapper
 from infra.request_queue import globalRequestQueue  # assume this exists
 from utils.logger import logger_context
@@ -11,11 +11,11 @@ from utils.postprocessor import PosePostprocessor
 from metrics.event_bus import event_bus
 
 class PoseDetectionService(pose_pb2_grpc.MirrorServicer):
-    def __init__(self, batch_size, timeout):
-        self.worker = BatchWorker()
+    def __init__(self, batch_size, timeout, num_workers):
         self.queue = globalRequestQueue
+        self.predict_pool = PredictThreadPool(num_workers)
         self.processor = BatchProcessor(
-            worker=self.worker,
+            predict_pool=self.predict_pool,
             queue=self.queue,
             batch_size=batch_size,
             timeout=timeout
