@@ -4,6 +4,7 @@ import os
 import csv
 from collections import deque
 from datetime import datetime
+from .event_bus import event_bus
 
 class QueueSizeMonitor:
     def __init__(self, queue, sample_interval=0.005, report_interval=1.0,
@@ -17,6 +18,8 @@ class QueueSizeMonitor:
         self.csv_log_path = csv_log_path
         self.txt_log_path = txt_log_path
         self._init_logs()
+        event_bus.subscribe("request_received", self)
+        event_bus.subscribe("batch_processed", self)
 
     def _init_logs(self):
         os.makedirs(os.path.dirname(self.csv_log_path), exist_ok=True)
@@ -73,3 +76,10 @@ class QueueSizeMonitor:
             with open(self.csv_log_path, "a", newline="") as f:
                 writer = csv.writer(f)
                 writer.writerow([timestamp_str, avg, max_val, min_val, latest, zero_count, round(zero_ratio, 2)])
+
+    def handle_event(self, event_name, **kwargs):
+        if event_name in ("request_received", "batch_processed"):
+            size = self.queue.qsize()
+            timestamp = time.time()
+            with self.lock:
+                self.samples.append((timestamp, size))
