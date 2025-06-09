@@ -1,8 +1,19 @@
 import time
 import csv
 import os
+import logging
 from contextlib import contextmanager
 from uuid import uuid4
+
+# basic application logging configuration
+LOG_LEVEL = os.environ.get("LOG_LEVEL", "INFO").upper()
+LOG_FORMAT = "[%(levelname)s][%(name)s][%(asctime)s] %(message)s"
+logging.basicConfig(level=getattr(logging, LOG_LEVEL, logging.INFO),
+                    format=LOG_FORMAT)
+
+def get_logger(name=None):
+    """Return a module-level logger."""
+    return logging.getLogger(name)
 
 LOG_PATH = "logs/request_trace.csv"
 FIELDNAMES = [
@@ -36,7 +47,7 @@ class RequestLogger:
         self.time_ref[label] = time.time()
         
     def get_mark(self, name: str):
-        return self.marks.get(name)
+        return self.time_ref.get(name)
 
 
     def duration(self, label):
@@ -45,9 +56,10 @@ class RequestLogger:
         return None
     
     def print_summary(self):
-        print("[RequestLogger Summary]")
+        req_log = logging.getLogger("request")
+        req_log.info("[RequestLogger Summary]")
         for k, v in self.fields.items():
-            print(f"  {k}: {v}")
+            req_log.info("  %s: %s", k, v)
 
 
     @contextmanager

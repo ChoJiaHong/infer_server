@@ -1,6 +1,7 @@
 import grpc
 from concurrent import futures
 import time
+from utils.logger import get_logger
 
 from service.pose_service import PoseDetectionService
 from grpc_health.v1 import health_pb2_grpc, health_pb2
@@ -22,6 +23,7 @@ class HealthServicer(health_pb2_grpc.HealthServicer):
         return health_pb2.HealthCheckResponse(status=health_pb2.HealthCheckResponse.SERVING)
 
 def serve():
+    logger = get_logger(__name__)
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=100))
     health_pb2_grpc.add_HealthServicer_to_server(HealthServicer(), server)
     pose_pb2_grpc.add_MirrorServicer_to_server(
@@ -30,11 +32,12 @@ def serve():
     )
     server.add_insecure_port('[::]:' + settings.gRPC_port)
     server.start()
-    print(f"[pose] gRPC server running on port {settings.gRPC_port}")
+    logger.info("gRPC server running on port %s", settings.gRPC_port)
     try:
         while True:
             time.sleep(86400)
     except KeyboardInterrupt:
+        logger.info("Shutting down server")
         server.stop(0)
 
 if __name__ == "__main__":
