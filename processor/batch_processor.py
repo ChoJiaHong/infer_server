@@ -52,7 +52,7 @@ class BatchProcessor:
             wrapper.logger.update({
                 "batch_size": len(wrappers),
                 "trigger_type": self.trigger_type,
-                "trigger_time": self.trigger_time,
+                "trigger_time_ms": self.trigger_time * 1000,
                 "batch_id": current_batch_id,
             })
 

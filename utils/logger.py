@@ -19,7 +19,7 @@ LOG_PATH = "logs/request_trace.csv"
 FIELDNAMES = [
     "request_id", "client_ip", "batch_size",
     "wait_ms", "trigger_type", "trigger_time_ms",
-    "inference_ms", "postprocess_ms", "total_ms",
+    "inference_ms", "preprocess_ms", "postprocess_ms", "total_ms",
     "receive_ts", "batch_id"
 ]
 
@@ -32,6 +32,7 @@ class RequestLogger:
             "wait_ms": 0,
             "trigger_time_ms": 0,
             "inference_ms": 0,
+            "preprocess_ms": 0,
             "postprocess_ms": 0,
             "total_ms": 0,
             "receive_ts": "",
