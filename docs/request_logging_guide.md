@@ -91,3 +91,11 @@ project/
 ```
 
 ---
+
+## 📊 日誌分析
+
+可使用 `utils/analyze_request_trace.py` 讀取 `logs/request_trace.csv` 並輸出平均耗時統計：
+
+```bash
+python utils/analyze_request_trace.py
+```
