@@ -1,12 +1,23 @@
 import threading
 import time
 import logging
+import os
+import csv
 
 class RPSMonitor:
-    def __init__(self, interval=1.0):
+    def __init__(self, interval=1.0, csv_log_path="logs/rps_stats.csv"):
         self.interval = interval
         self.counter = 0
         self.lock = threading.Lock()
+        self.csv_log_path = csv_log_path
+        self._init_log()
+
+    def _init_log(self):
+        os.makedirs(os.path.dirname(self.csv_log_path), exist_ok=True)
+        if not os.path.exists(self.csv_log_path):
+            with open(self.csv_log_path, "w", newline="") as f:
+                writer = csv.writer(f)
+                writer.writerow(["timestamp", "rps"])
 
     def increment(self):
         with self.lock:
@@ -19,6 +30,10 @@ class RPSMonitor:
                 with self.lock:
                     rps = self.counter
                     self.counter = 0
-                logging.info(f"[Monitor] Current time = %s, rps={rps}", time.strftime("%Y-%m-%d %H:%M:%S"))
+                timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
+                logging.info("[Monitor] Current time = %s, rps=%s", timestamp, rps)
+                with open(self.csv_log_path, "a", newline="") as f:
+                    writer = csv.writer(f)
+                    writer.writerow([timestamp, rps])
         threading.Thread(target=loop, daemon=True).start()
 
