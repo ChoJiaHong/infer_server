@@ -19,7 +19,8 @@ LOG_PATH = "logs/request_trace.csv"
 FIELDNAMES = [
     "request_id", "client_ip", "batch_size",
     "wait_ms", "trigger_type", "trigger_time_ms",
-    "inference_ms", "postprocess_ms", "total_ms"
+    "inference_ms", "postprocess_ms", "total_ms",
+    "receive_ts", "batch_id"
 ]
 
 class RequestLogger:
@@ -33,6 +34,8 @@ class RequestLogger:
             "inference_ms": 0,
             "postprocess_ms": 0,
             "total_ms": 0,
+            "receive_ts": "",
+            "batch_id": None,
         }
         self.time_ref = {}
         self._start_total = time.time()

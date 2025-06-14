@@ -41,6 +41,7 @@ class PoseDetectionService(pose_pb2_grpc.MirrorServicer):
 
             wrapper = RequestWrapper(frame)
             wrapper.logger = logger  # 將 logger 傳入 wrapper
+            logger.set("receive_ts", wrapper.receive_ts)
             self.queue.put(wrapper)
             self.logger.info(
                 "Request %s enqueued from %s | size=%d",
@@ -57,5 +58,5 @@ class PoseDetectionService(pose_pb2_grpc.MirrorServicer):
                 self.logger.error("Timeout waiting for result for %s: %s", logger.request_id, e)
                 processed = ""
 
-            #logger.write()
+            wrapper.logger.write()
             return pose_pb2.FrameResponse(skeletons=processed)
