@@ -19,6 +19,6 @@ class RPSMonitor:
                 with self.lock:
                     rps = self.counter
                     self.counter = 0
-                logging.getLogger(__name__).info("[Monitor] RPS = %s", rps)
+                logging.info(f"[Monitor] Current time = %s, rps={rps}", time.strftime("%Y-%m-%d %H:%M:%S"))
         threading.Thread(target=loop, daemon=True).start()
 

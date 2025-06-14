@@ -24,7 +24,7 @@ class BatchProcessor:
 
         batch_size = self.config.batch_size
         timeout = self.config.queue_timeout
-
+        #print(f"[BatchProcessor] Using batch_size={batch_size}, timeout={timeout}")
         while len(batch_images) < batch_size and (time.time() - start_time) < timeout:
             try:
                 wrapper = self.queue.get(timeout=0.01)
@@ -44,7 +44,7 @@ class BatchProcessor:
 
     def _run_inference(self, wrappers):
         for wrapper in wrappers:
-            wrapper.logger.mark("infer_start")
+            wrapper.logger.set_mark("infer_start")
             wrapper.logger.update({
                 "batch_size": len(wrappers),
                 "trigger_type": self.trigger_type,
