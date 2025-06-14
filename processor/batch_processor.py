@@ -10,6 +10,7 @@ class BatchProcessor:
         self.queue = queue
         self.config = config
         self.logger = get_logger(__name__)
+        self.batch_counter = 0
 
     def run_forever(self):
         while True:
@@ -43,12 +44,16 @@ class BatchProcessor:
         return wrappers
 
     def _run_inference(self, wrappers):
+        self.batch_counter += 1
+        current_batch_id = self.batch_counter
         for wrapper in wrappers:
+            wrapper.batch_id = current_batch_id
             wrapper.logger.set_mark("infer_start")
             wrapper.logger.update({
                 "batch_size": len(wrappers),
                 "trigger_type": self.trigger_type,
-                "trigger_time": self.trigger_time
+                "trigger_time": self.trigger_time,
+                "batch_id": current_batch_id,
             })
 
         batch_images = [w.frame for w in wrappers]
