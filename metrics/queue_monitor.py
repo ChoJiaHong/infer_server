@@ -76,3 +76,24 @@ class QueueSizeMonitor:
             with open(self.csv_log_path, "a", newline="") as f:
                 writer = csv.writer(f)
                 writer.writerow([timestamp_str, avg, max_val, min_val, latest, zero_count, round(zero_ratio, 2)])
+
+    def get_recent_stats(self):
+        now = time.time()
+        cutoff = now - self.report_interval
+        with self.lock:
+            recent = [size for ts, size in self.samples if ts >= cutoff]
+        if not recent:
+            return None
+        avg = sum(recent) / len(recent)
+        max_val = max(recent)
+        min_val = min(recent)
+        latest = recent[-1]
+        zero_count = sum(1 for s in recent if s == 0)
+        zero_ratio = zero_count / len(recent) * 100
+        return {
+            "avg": avg,
+            "max": max_val,
+            "min": min_val,
+            "latest": latest,
+            "zero_ratio": zero_ratio,
+        }
