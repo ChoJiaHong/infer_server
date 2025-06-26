@@ -25,5 +25,9 @@ class MonitorRegistry:
     def prometheus_exporter(self):
         return self._registry.get("prometheus")
 
+    @property
+    def completion_monitor(self):
+        return self._registry.get("completion")
+
 # metrics/registry.py（繼續）
 monitorRegistry = MonitorRegistry()

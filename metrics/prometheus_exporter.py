@@ -10,6 +10,7 @@ class PrometheusExporter:
         self.queue_latest = Gauge('queue_size_latest', 'Latest queue size sample')
         self.queue_zero_ratio = Gauge('queue_zero_ratio', 'Percentage of zero-size queue samples')
         self.rps = Gauge('requests_per_second', 'Number of requests processed per second')
+        self.completed_rps = Gauge('completed_requests_per_second', 'Number of requests completed per second')
         start_http_server(self.port)
         logging.getLogger(__name__).info('Prometheus exporter running on port %s', self.port)
 
@@ -26,3 +27,7 @@ class PrometheusExporter:
     def update_rps(self, rps: float):
         """Update the RPS metric."""
         self.rps.set(rps)
+
+    def update_completed_rps(self, rps: float):
+        """Update the completed requests per second metric."""
+        self.completed_rps.set(rps)
