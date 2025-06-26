@@ -20,8 +20,9 @@ If the compiled module is unavailable, the pure Python fallback will be used.
 
 ## Metrics Export
 
-The server exposes monitoring metrics for Prometheus on port `8001`. Install
-`prometheus_client` and run the application normally. Prometheus can scrape
-`http://<host>:8001/metrics` to collect queue size, request rate, and completed
-request statistics.
+The server exposes monitoring metrics for Prometheus on port `8001`. If
+`prometheus_client` is installed, run the application normally and Prometheus
+can scrape `http://<host>:8001/metrics` to collect queue size, request rate, and
+completed request statistics.  If the library is missing or the metrics server
+fails to start, the application continues to run without exporting metrics.
 
