@@ -3,6 +3,7 @@ import time
 import logging
 import os
 import csv
+from metrics.registry import monitorRegistry
 
 class RPSMonitor:
     def __init__(self, interval=1.0, csv_log_path="logs/rps_stats.csv"):
@@ -37,6 +38,9 @@ class RPSMonitor:
                 with open(self.csv_log_path, "a", newline="") as f:
                     writer = csv.writer(f)
                     writer.writerow([timestamp, rps])
+                prometheus = monitorRegistry.get("prometheus")
+                if prometheus:
+                    prometheus.update_rps(rps)
         threading.Thread(target=loop, daemon=True).start()
 
     def get_last_rps(self):

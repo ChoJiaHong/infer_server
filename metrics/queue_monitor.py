@@ -3,6 +3,7 @@ import time
 import os
 import csv
 import logging
+from metrics.registry import monitorRegistry
 from collections import deque
 from datetime import datetime
 
@@ -76,6 +77,16 @@ class QueueSizeMonitor:
             with open(self.csv_log_path, "a", newline="") as f:
                 writer = csv.writer(f)
                 writer.writerow([timestamp_str, avg, max_val, min_val, latest, zero_count, round(zero_ratio, 2)])
+
+            prometheus = monitorRegistry.get("prometheus")
+            if prometheus:
+                prometheus.update_queue({
+                    "avg": avg,
+                    "max": max_val,
+                    "min": min_val,
+                    "latest": latest,
+                    "zero_ratio": zero_ratio,
+                })
 
     def get_recent_stats(self):
         now = time.time()

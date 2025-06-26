@@ -21,5 +21,9 @@ class MonitorRegistry:
     def queue_monitor(self):
         return self._registry.get("queue_monitor")
 
+    @property
+    def prometheus_exporter(self):
+        return self._registry.get("prometheus")
+
 # metrics/registry.py（繼續）
 monitorRegistry = MonitorRegistry()
