@@ -19,6 +19,7 @@ from infra.request_queue import globalRequestQueue
 from metrics.registry import monitorRegistry
 from metrics.rps_monitor import RPSMonitor
 from metrics.queue_monitor import QueueSizeMonitor
+from metrics.prometheus_exporter import PrometheusExporter
 
 #--------------------------------
 
@@ -55,6 +56,7 @@ if __name__ == "__main__":
     # metrics/registry.py（繼續）
     monitorRegistry.register(name="rps", instance=RPSMonitor(interval=1.0))
     monitorRegistry.register(name="queue", instance=QueueSizeMonitor(globalRequestQueue, sample_interval=0.005, report_interval=1.0))
+    monitorRegistry.register(name="prometheus", instance=PrometheusExporter(port=8001))
     monitorRegistry.start_all()
     #----------------------------------------
     serve()
