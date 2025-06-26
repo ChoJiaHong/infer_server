@@ -59,4 +59,9 @@ class PoseDetectionService(pose_pb2_grpc.MirrorServicer):
                 processed = ""
 
             wrapper.logger.write()
+
+            completion = monitorRegistry.get("completion")
+            if completion:
+                completion.increment()
+
             return pose_pb2.FrameResponse(skeletons=processed)

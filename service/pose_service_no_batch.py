@@ -42,4 +42,9 @@ class PoseDetectionServiceNoBatch(pose_pb2_grpc.MirrorServicer):
                 processed = self.postprocessor.process(result)
 
             logger.write()
+
+            completion = monitorRegistry.get("completion")
+            if completion:
+                completion.increment()
+
             return pose_pb2.FrameResponse(skeletons=processed)
