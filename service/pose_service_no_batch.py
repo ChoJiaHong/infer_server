@@ -2,6 +2,7 @@ import time
 import pose_pb2_grpc
 import pose_pb2
 from model.batch_worker import BatchWorker
+from processor.single_processor import SingleFrameProcessor
 from utils.logger import logger_context, get_logger
 from utils.preprocessor import PosePreprocessor
 from utils.postprocessor import PosePostprocessor
@@ -14,6 +15,7 @@ class PoseDetectionServiceNoBatch(pose_pb2_grpc.MirrorServicer):
         self.worker = BatchWorker()
         self.preprocessor = PosePreprocessor()
         self.postprocessor = PosePostprocessor()
+        self.processor = SingleFrameProcessor(self.worker)
         self.logger = get_logger(__name__)
 
     def SkeletonFrame(self, request, context):
@@ -36,7 +38,7 @@ class PoseDetectionServiceNoBatch(pose_pb2_grpc.MirrorServicer):
                 frame = self.preprocessor.process(request.image_data)
 
             with logger.phase("inference"):
-                result = self.worker.predict([frame])[0]
+                result = self.processor.predict(frame)
 
             with logger.phase("postprocess"):
                 processed = self.postprocessor.process(result)
