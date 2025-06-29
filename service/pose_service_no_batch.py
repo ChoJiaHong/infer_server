@@ -1,4 +1,5 @@
 import time
+import queue
 import pose_pb2_grpc
 import pose_pb2
 from model.batch_worker import BatchWorker
@@ -17,11 +18,15 @@ class PoseDetectionServiceNoBatch(pose_pb2_grpc.MirrorServicer):
         self.postprocessor = PosePostprocessor()
         self.processor = SingleFrameProcessor(self.worker)
         self.logger = get_logger(__name__)
+        self.queue = queue.Queue()
 
     def SkeletonFrame(self, request, context):
         rps = monitorRegistry.get("rps")
         if rps:
             rps.increment()
+
+        # enqueue request for queue size monitoring
+        self.queue.put(1)
 
         client_ip = context.peer().split(":")[-1].replace("ipv4/", "")
         with logger_context() as logger:
@@ -49,4 +54,10 @@ class PoseDetectionServiceNoBatch(pose_pb2_grpc.MirrorServicer):
             if completion:
                 completion.increment()
 
-            return pose_pb2.FrameResponse(skeletons=processed)
+            response = pose_pb2.FrameResponse(skeletons=processed)
+
+        if not self.queue.empty():
+            self.queue.get_nowait()
+
+        return response
+
