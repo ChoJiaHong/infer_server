@@ -26,3 +26,7 @@ can scrape `http://<host>:8001/metrics` to collect queue size, request rate, and
 completed request statistics.  If the library is missing or the metrics server
 fails to start, the application continues to run without exporting metrics.
 
+
+Metrics from the queue, completion, and RPS monitors are written as separate CSV
+files under `logs/`. Run `python utils/merge_metrics.py` to combine these into
+`logs/merged_stats.csv` for easier analysis.
