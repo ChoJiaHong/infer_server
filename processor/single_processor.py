@@ -1,4 +1,4 @@
-from ultralytics.utils import ThreadingLocked
+import threading
 
 
 class SingleFrameProcessor:
@@ -6,7 +6,7 @@ class SingleFrameProcessor:
 
     def __init__(self, worker):
         self.worker = worker
-        self._lock = ThreadingLocked()
+        self._lock = threading.Lock()
 
     def predict(self, frame):
         """Run prediction for a single frame in a thread-safe manner."""
