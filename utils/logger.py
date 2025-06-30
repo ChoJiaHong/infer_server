@@ -4,6 +4,7 @@ import os
 import logging
 from contextlib import contextmanager
 from uuid import uuid4
+from datetime import datetime
 
 # basic application logging configuration
 LOG_LEVEL = os.environ.get("LOG_LEVEL", "INFO").upper()
@@ -37,7 +38,7 @@ class RequestLogger:
             "total_ms": 0,
             "receive_ts": "",
             "batch_id": None,
-            "start_ts": time.strftime("%Y-%m-%d %H:%M:%S"),
+            "start_ts": datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3],
             "end_ts": "",
         }
         self.time_ref = {}
@@ -77,7 +78,7 @@ class RequestLogger:
 
     def write(self):
         self.fields["total_ms"] = (time.time() - self._start_total) * 1000
-        self.fields["end_ts"] = time.strftime("%Y-%m-%d %H:%M:%S")
+        self.fields["end_ts"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
 
         is_new = not os.path.exists(LOG_PATH)
         with open(LOG_PATH, "a", newline="") as f:
