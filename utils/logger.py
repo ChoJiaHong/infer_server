@@ -1,4 +1,5 @@
 import time
+import datetime
 import csv
 import os
 import logging
@@ -20,7 +21,7 @@ FIELDNAMES = [
     "request_id", "client_ip", "batch_size",
     "wait_ms", "trigger_type", "trigger_time_ms",
     "inference_ms", "preprocess_ms", "postprocess_ms", "total_ms",
-    "receive_ts", "batch_id"
+    "receive_ts", "batch_id", "start_ts", "end_ts"
 ]
 
 class RequestLogger:
@@ -37,6 +38,8 @@ class RequestLogger:
             "total_ms": 0,
             "receive_ts": "",
             "batch_id": None,
+            "start_ts": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3],
+            "end_ts": "",
         }
         self.time_ref = {}
         self._start_total = time.time()
@@ -75,6 +78,7 @@ class RequestLogger:
 
     def write(self):
         self.fields["total_ms"] = (time.time() - self._start_total) * 1000
+        self.fields["end_ts"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
 
         is_new = not os.path.exists(LOG_PATH)
         with open(LOG_PATH, "a", newline="") as f:
