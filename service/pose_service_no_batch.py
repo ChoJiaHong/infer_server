@@ -1,5 +1,6 @@
 import time
 import queue
+from datetime import datetime
 import pose_pb2_grpc
 import pose_pb2
 from model.batch_worker import BatchWorker
@@ -32,7 +33,7 @@ class PoseDetectionServiceNoBatch(pose_pb2_grpc.MirrorServicer):
         with logger_context() as logger:
             logger.set_mark("start")
             logger.set("client_ip", client_ip)
-            logger.set("receive_ts", time.strftime("%Y-%m-%d %H:%M:%S"))
+            logger.set("receive_ts", datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3])
             logger.update({
                 "batch_size": 1,
                 "trigger_type": "single",
