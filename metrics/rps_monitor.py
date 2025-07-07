@@ -34,7 +34,7 @@ class RPSMonitor:
                     self.counter = 0
                     self.last_rps = rps
                 timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
-                logging.info("[Monitor] Current time = %s, rps=%s", timestamp, rps)
+                logger.info("[Monitor] Current time = %s, rps=%s", timestamp, rps)
                 with open(self.csv_log_path, "a", newline="") as f:
                     writer = csv.writer(f)
                     writer.writerow([timestamp, rps])
