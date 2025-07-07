@@ -16,7 +16,7 @@ class BatchProcessor:
         self.queue = queue
         self.batch_size = batch_size
         self.timeout = timeout
-        self.logger = get_logger(__name__)
+        self.logger = logger_context()
 
     def run_forever(self):
         while True:
