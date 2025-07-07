@@ -10,7 +10,7 @@ from datetime import datetime
 logger = logging.getLogger(__name__)
 
 class QueueSizeMonitor:
-    def __init__(self, queue, sample_interval=0.005, report_interval=1.0,
+    def __init__(self, queue, sample_interval=0.001, report_interval=1.0,
                  csv_log_path="logs/queue_stats.csv",
                  txt_log_path="logs/queue_report.txt"):
         self.queue = queue

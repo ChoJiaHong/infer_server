@@ -39,7 +39,7 @@ class Settings(BaseSettings):
 
     # class Config:
     #    env_file = "env.txt"
-    batch_size: int = 5
+    batch_size: int = 1
     queue_timeout: float = 0.01
     num_workers: int = 1
 

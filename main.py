@@ -7,6 +7,7 @@ import uvicorn
 from admin_api import app as admin_app
 
 from service.pose_service import PoseDetectionService
+from service.pose_service_no_batch import PoseDetectionServiceNoBatch
 from batch_config import global_batch_config
 from grpc_health.v1 import health_pb2_grpc, health_pb2
 import pose_pb2_grpc
@@ -35,10 +36,11 @@ def start_admin_api():
 
 def serve():
     logger = get_logger(__name__)
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=100))
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=300))
     health_pb2_grpc.add_HealthServicer_to_server(HealthServicer(), server)
     pose_pb2_grpc.add_MirrorServicer_to_server(
-        PoseDetectionService(config=global_batch_config),
+        #PoseDetectionService(config=global_batch_config),
+        PoseDetectionServiceNoBatch(),
         server
     )
     server.add_insecure_port('[::]:' + settings.gRPC_port)
@@ -57,7 +59,7 @@ if __name__ == "__main__":
     # metrics/registry.py（繼續）
     monitorRegistry.register(name="rps", instance=RPSMonitor(interval=1.0))
     monitorRegistry.register(name="completion", instance=CompletionMonitor(interval=1.0))
-    monitorRegistry.register(name="queue", instance=QueueSizeMonitor(globalRequestQueue, sample_interval=0.005, report_interval=1.0))
+    monitorRegistry.register(name="queue", instance=QueueSizeMonitor(globalRequestQueue, sample_interval=0.001, report_interval=1.0))
     monitorRegistry.register(name="prometheus", instance=PrometheusExporter(port=8001))
     monitorRegistry.start_all()
     #----------------------------------------

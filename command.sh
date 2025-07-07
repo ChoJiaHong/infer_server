@@ -7,4 +7,6 @@ curl -X POST http://127.0.0.1:8000/config/batching \
      -d '{"batch_size": 1, "queue_timeout": 0.01}'
 
 
-kubectl cp my_infer_server_v2 pose-1-30561:/app
+kubectl cp ../my_infer_server_v2 pose-1-30561:/app
+
+kubectl cp  pose-1-30561:/app/my_infer_server_v2/logs  ../my_infer_server_v2/logs

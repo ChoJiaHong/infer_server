@@ -55,7 +55,11 @@ class PrometheusExporter:
             logging.getLogger(__name__).warning(
                 "Failed to start Prometheus exporter: %s", e
             )
-
+    def start(self):
+        """No-op for registry compatibility."""
+        # Exporter is initialized on construction, so nothing to do here.
+        pass
+    
     def update_queue(self, stats: dict):
         """Update queue related metrics with a stats dictionary."""
         if not self.enabled or not stats:

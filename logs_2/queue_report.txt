@@ -1,0 +1,68 @@
+[QueueMonitor] 2025-07-01 00:25:27 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=857 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:25:28 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=929 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:25:29 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=934 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:25:30 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=919 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:25:31 | avg= 3.46 | max=10 | min= 0 | latest=10 | zero=572 | zero_ratio= 65.07%
+[QueueMonitor] 2025-07-01 00:25:32 | avg= 9.94 | max=10 | min= 9 | latest=10 | zero=  0 | zero_ratio=  0.00%
+[QueueMonitor] 2025-07-01 00:25:33 | avg= 9.00 | max=10 | min= 8 | latest= 8 | zero=  0 | zero_ratio=  0.00%
+[QueueMonitor] 2025-07-01 00:25:34 | avg= 0.59 | max= 9 | min= 0 | latest= 0 | zero=829 | zero_ratio= 90.01%
+[QueueMonitor] 2025-07-01 00:25:35 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=914 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:25:36 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=925 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:25:37 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=922 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:25:38 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=939 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:25:39 | avg= 7.36 | max=10 | min= 0 | latest= 0 | zero=107 | zero_ratio= 11.46%
+[QueueMonitor] 2025-07-01 00:25:40 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=926 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:25:41 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=913 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:25:42 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=936 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:25:43 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=916 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:25:44 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=933 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:25:45 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=928 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:25:46 | avg= 1.14 | max=10 | min= 0 | latest= 6 | zero=778 | zero_ratio= 83.12%
+[QueueMonitor] 2025-07-01 00:25:47 | avg= 4.40 | max= 7 | min= 0 | latest= 0 | zero=266 | zero_ratio= 28.51%
+[QueueMonitor] 2025-07-01 00:25:48 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=925 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:25:49 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=939 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:25:50 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=931 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:25:51 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=937 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:25:52 | avg= 1.59 | max=10 | min= 0 | latest= 4 | zero=605 | zero_ratio= 65.90%
+[QueueMonitor] 2025-07-01 00:25:53 | avg= 2.09 | max= 5 | min= 0 | latest= 0 | zero=431 | zero_ratio= 46.10%
+[QueueMonitor] 2025-07-01 00:25:54 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=945 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:25:55 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=936 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:25:56 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=938 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:25:57 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=935 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:25:58 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=922 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:25:59 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=925 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:26:00 | avg= 0.32 | max=10 | min= 0 | latest= 7 | zero=880 | zero_ratio= 96.07%
+[QueueMonitor] 2025-07-01 00:26:01 | avg= 1.65 | max= 7 | min= 0 | latest= 0 | zero=139 | zero_ratio= 14.88%
+[QueueMonitor] 2025-07-01 00:26:02 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=943 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:26:03 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=945 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:26:04 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=944 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:26:05 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=938 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:26:06 | avg= 0.02 | max= 7 | min= 0 | latest= 7 | zero=898 | zero_ratio= 99.56%
+[QueueMonitor] 2025-07-01 00:26:07 | avg= 7.41 | max=10 | min= 0 | latest= 0 | zero=102 | zero_ratio= 11.02%
+[QueueMonitor] 2025-07-01 00:26:08 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=929 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:26:09 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=932 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:26:10 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=943 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:26:11 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=920 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:26:12 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=935 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:26:13 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=937 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:26:14 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=938 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:26:15 | avg= 0.45 | max=10 | min= 0 | latest= 4 | zero=876 | zero_ratio= 93.59%
+[QueueMonitor] 2025-07-01 00:26:16 | avg= 1.92 | max= 7 | min= 0 | latest= 1 | zero=177 | zero_ratio= 19.24%
+[QueueMonitor] 2025-07-01 00:26:17 | avg= 0.20 | max= 2 | min= 0 | latest= 0 | zero=811 | zero_ratio= 86.65%
+[QueueMonitor] 2025-07-01 00:26:18 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=927 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:26:19 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=940 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:26:20 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=930 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:26:21 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=931 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:26:22 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=932 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:26:23 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=929 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:26:24 | avg= 0.18 | max=10 | min= 0 | latest= 9 | zero=917 | zero_ratio= 97.97%
+[QueueMonitor] 2025-07-01 00:26:25 | avg= 1.12 | max= 9 | min= 0 | latest= 2 | zero=396 | zero_ratio= 42.40%
+[QueueMonitor] 2025-07-01 00:26:26 | avg= 0.63 | max= 3 | min= 0 | latest= 0 | zero=585 | zero_ratio= 63.38%
+[QueueMonitor] 2025-07-01 00:26:27 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=922 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:26:28 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=940 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:26:29 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=921 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:26:30 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=932 | zero_ratio=100.00%
+[QueueMonitor] 2025-07-01 00:26:31 | avg= 0.97 | max=10 | min= 0 | latest= 0 | zero=579 | zero_ratio= 62.46%
+[QueueMonitor] 2025-07-01 00:26:32 | avg= 0.58 | max= 2 | min= 0 | latest= 2 | zero=563 | zero_ratio= 60.21%
+[QueueMonitor] 2025-07-01 00:26:33 | avg= 0.27 | max= 2 | min= 0 | latest= 0 | zero=765 | zero_ratio= 83.06%
+[QueueMonitor] 2025-07-01 00:26:34 | avg= 0.00 | max= 0 | min= 0 | latest= 0 | zero=908 | zero_ratio=100.00%
