@@ -8,9 +8,11 @@ from admin_api import app as admin_app
 
 from service.pose_service import PoseDetectionService
 from service.pose_service_no_batch import PoseDetectionServiceNoBatch
+from service.gesture_service import GestureDetectionService
 from batch_config import global_batch_config
 from grpc_health.v1 import health_pb2_grpc, health_pb2
 import pose_pb2_grpc
+import gesture_pb2_grpc
 from config import settings
 
 
@@ -43,6 +45,11 @@ def serve():
         PoseDetectionServiceNoBatch(),
         server
     )
+    if settings.enable_gesture:
+        gesture_pb2_grpc.add_GestureRecognitionServicer_to_server(
+            GestureDetectionService(),
+            server
+        )
     server.add_insecure_port('[::]:' + settings.gRPC_port)
     start_admin_api()
     server.start()
