@@ -4,8 +4,7 @@ import pose_pb2
 from model.batch_worker import BatchWorker
 from processor.batch_processor import BatchProcessor
 from batch_config import BatchConfig, global_batch_config
-from core.request_wrapper import RequestWrapper
-from infra.request_queue import globalRequestQueue  # assume this exists
+from infra.request_queue import globalRequestQueue  # shared request queue
 from utils.logger import logger_context, get_logger
 from utils.preprocessor import PosePreprocessor
 from utils.postprocessor import PosePostprocessor
@@ -14,10 +13,9 @@ from metrics.registry import monitorRegistry
 class PoseDetectionService(pose_pb2_grpc.MirrorServicer):
     def __init__(self, config: BatchConfig = global_batch_config):
         self.worker = BatchWorker()
-        self.queue = globalRequestQueue
         self.processor = BatchProcessor(
             worker=self.worker,
-            queue=self.queue,
+            queue=globalRequestQueue,
             config=config
         )
         self.preprocessor = PosePreprocessor()
@@ -39,26 +37,15 @@ class PoseDetectionService(pose_pb2_grpc.MirrorServicer):
             with logger.phase("preprocess"):
                 frame = self.preprocessor.process(request.image_data)
 
-            wrapper = RequestWrapper(frame)
-            wrapper.logger = logger  # 將 logger 傳入 wrapper
-            logger.set("receive_ts", wrapper.receive_ts)
-            self.queue.put(wrapper)
-            self.logger.info(
-                "Request %s enqueued from %s | size=%d",
-                logger.request_id,
-                client_ip,
-                self.queue.qsize(),
-            )
+            result = self.processor.predict(frame, logger)
 
-            try:
-                result = wrapper.result_queue.get(timeout=2.0)
-                with logger.phase("postprocess"):
+            with logger.phase("postprocess"):
+                if result is not None:
                     processed = self.postprocessor.process(result)
-            except Exception as e:
-                self.logger.error("Timeout waiting for result for %s: %s", logger.request_id, e)
-                processed = ""
+                else:
+                    processed = ""
 
-            wrapper.logger.write()
+            logger.write()
 
             completion = monitorRegistry.get("completion")
             if completion:

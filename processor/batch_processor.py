@@ -1,6 +1,6 @@
 import time
 import queue
-from utils.logger import logger_context, get_logger
+from utils.logger import get_logger
 from core.request_wrapper import RequestWrapper
 from batch_config import global_batch_config
 
@@ -11,6 +11,29 @@ class BatchProcessor:
         self.config = config
         self.logger = get_logger(__name__)
         self.batch_counter = 0
+
+    def predict(self, frame, logger, timeout=2.0):
+        """Enqueue a frame and wait for the prediction result."""
+        wrapper = RequestWrapper(frame)
+        wrapper.logger = logger
+        logger.set("receive_ts", wrapper.receive_ts)
+
+        self.queue.put(wrapper)
+        self.logger.info(
+            "Request %s enqueued | size=%d",
+            logger.request_id,
+            self.queue.qsize(),
+        )
+
+        try:
+            result = wrapper.result_queue.get(timeout=timeout)
+        except Exception as e:
+            self.logger.error(
+                "Timeout waiting for result for %s: %s", logger.request_id, e
+            )
+            result = None
+
+        return result
 
     def run_forever(self):
         while True:
