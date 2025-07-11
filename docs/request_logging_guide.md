@@ -64,7 +64,7 @@ wrapper.logger.mark("post_end")
 ### 5. 匯出與顯示結果（可選）
 
 ```python
-wrapper.logger.export_csv()      # 將結果寫入 logs/request_trace.csv
+wrapper.logger.export_csv()      # 將結果寫入自動建立的 logs/request_trace.csv
 wrapper.logger.print_summary()   # 輸出精簡摘要到終端
 ```
 
@@ -84,7 +84,7 @@ wrapper.logger.print_summary()   # 輸出精簡摘要到終端
 project/
 ├── utils/
 │   └── request_logger.py     ← 日誌模組位置
-├── logs/
+├── logs/                    ← 執行時自動建立
 │   └── request_trace.csv     ← 自動產生的追蹤紀錄
 ├── docs/
 │   └── request_logging_guide.md
