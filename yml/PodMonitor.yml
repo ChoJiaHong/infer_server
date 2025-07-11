@@ -1,0 +1,14 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: pose-podmonitor
+  labels:
+    release: prometheus-stack
+spec:
+  selector:
+    matchLabels:
+      app: pose
+  podMetricsEndpoints:
+    - port: http-metrics
+      path: /metrics
+      interval: 1s

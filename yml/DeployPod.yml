@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pose-3-30563
+  labels:
+    app: pose           # 補上 app label，PodMonitor 用
+spec:
+  nodeSelector: 
+    gpuNode: lab
+  containers:
+    - name: pose
+      image: hiro08081/infer_server:2
+      command: ["sleep", "infinity"]   # ← 注意：這只是測試用，需換成你真的會啟動的服務
+      ports:
+        - containerPort: 50052
+          hostPort: 30563
+        - containerPort: 8001           # ← 新增 Prometheus 專用 port
+          name: http-metrics
+      readinessProbe:
+        tcpSocket:
+          port: 50052
+        initialDelaySeconds: 5
+        periodSeconds: 5
+      resources:
+        limits:
+          nvidia.com/gpu: 1
