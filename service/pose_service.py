@@ -7,8 +7,8 @@ from batch_config import BatchConfig, global_batch_config
 from core.request_wrapper import RequestWrapper
 from infra.request_queue import globalRequestQueue  # assume this exists
 from utils.logger import logger_context, get_logger
-from utils.preprocessor import PosePreprocessor
-from utils.postprocessor import PosePostprocessor
+from processor.preprocessor import PosePreprocessor
+from processor.postprocessor import PosePostprocessor
 from metrics.registry import monitorRegistry
 
 class PoseDetectionService(pose_pb2_grpc.MirrorServicer):

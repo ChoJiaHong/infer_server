@@ -4,8 +4,8 @@ from proto import gesture_pb2
 from model.gesture_worker import GestureWorker
 from processor.single_processor import SingleFrameProcessor
 from utils.logger import logger_context, get_logger
-from utils.preprocessor import GesturePreprocessor
-from utils.postprocessor import GesturePostprocessor
+from processor.preprocessor import GesturePreprocessor
+from processor.postprocessor import GesturePostprocessor
 from metrics.registry import monitorRegistry
 from infra.request_queue import globalRequestQueue
 
