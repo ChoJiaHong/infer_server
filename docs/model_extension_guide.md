@@ -15,11 +15,15 @@
 ```
 project/
 ├── model/                # 模型執行邏輯
-├── processor/            # batch queue 管理
+├── processor/            # 前處理、後處理與批次處理
+│   ├── preprocessor.py   # 前處理策略類（依模型任務分支）
+│   ├── postprocessor.py  # 後處理策略類（解析模型輸出）
+│   ├── batch_processor.py
+│   └── single_processor.py
 ├── service/              # gRPC 接口邏輯
 ├── utils/
-│   ├── preprocessor.py   # 前處理策略類（依模型任務分支）
-│   └── postprocessor.py  # 後處理策略類（解析模型輸出）
+│   ├── timing.py              # 裝飾器
+│   └── formatter.py           # YOLO 結果轉 JSON
 ├── main.py               # 伺服器啟動入口
 └── config.py             # 基本參數（batch_size、timeout 等）
 ```
@@ -38,7 +42,7 @@ project/
 
 ## 🧩 1. 新增前處理類別（Preprocessor）
 
-在 `utils/preprocessor.py` 中定義：
+在 `processor/preprocessor.py` 中定義：
 
 ```python
 class GesturePreprocessor(Preprocessor):
@@ -51,7 +55,7 @@ class GesturePreprocessor(Preprocessor):
 
 ## 🧠 2. 新增後處理類別（Postprocessor）
 
-在 `utils/postprocessor.py` 中定義：
+在 `processor/postprocessor.py` 中定義：
 
 ```python
 class GesturePostprocessor(Postprocessor):

@@ -6,8 +6,8 @@ from proto import pose_pb2
 from model.batch_worker import BatchWorker
 from processor.single_processor import SingleFrameProcessor
 from utils.logger import logger_context, get_logger
-from utils.preprocessor import PosePreprocessor
-from utils.postprocessor import PosePostprocessor
+from processor.preprocessor import PosePreprocessor
+from processor.postprocessor import PosePostprocessor
 from metrics.registry import monitorRegistry
 from infra.request_queue import globalRequestQueue  # assume this exists
 class PoseDetectionServiceNoBatch(pose_pb2_grpc.MirrorServicer):
