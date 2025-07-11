@@ -1,6 +1,0 @@
-opencv-python
-tensorboard
-tqdm
-matplotlib
-click
-pydantic
