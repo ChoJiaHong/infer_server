@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-import gesture_pb2 as gesture__pb2
+from . import gesture_pb2 as gesture__pb2
 
 GRPC_GENERATED_VERSION = '1.66.2'
 GRPC_VERSION = grpc.__version__

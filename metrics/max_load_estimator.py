@@ -1,8 +1,8 @@
 import time
 import grpc
 from metrics.registry import monitorRegistry
-import pose_pb2
-import pose_pb2_grpc
+from proto import pose_pb2
+from proto import pose_pb2_grpc
 
 
 class MaxLoadEstimator:

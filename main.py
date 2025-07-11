@@ -11,8 +11,8 @@ from service.pose_service_no_batch import PoseDetectionServiceNoBatch
 from service.gesture_service import GestureDetectionService
 from batch_config import global_batch_config
 from grpc_health.v1 import health_pb2_grpc, health_pb2
-import pose_pb2_grpc
-import gesture_pb2_grpc
+from proto import pose_pb2_grpc
+from proto import gesture_pb2_grpc
 from config import settings
 
 
