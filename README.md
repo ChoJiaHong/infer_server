@@ -6,6 +6,11 @@ The admin API is started automatically when running `python main.py`. It exposes
 - `POST /config/batching` with JSON `{ "batch_size": int, "queue_timeout": float }` updates the runtime behavior.
 Standalone mode is still available by running `python admin_api.py`.
 
+## Selecting a Service
+
+Set `task` in `config.py` or via the environment to choose which AI service
+the server exposes. Supported values are `pose` and `gesture`.
+
 ## Building Cython extensions
 
 The postprocessing stage ships with an optional Cython implementation for

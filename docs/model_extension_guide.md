@@ -91,8 +91,8 @@ proto.pose_pb2_grpc.add_MirrorServicer_to_server(GestureDetectionService(...), s
 
 | 模組          | 擴充方向                                      |
 | ----------- | ----------------------------------------- |
-| `config.py` | 加入任務選擇變數，如 `TASK="pose"`                  |
-| `main.py`   | 根據 `config.TASK` 動態選用 Service 類           |
+| `config.py` | 加入任務選擇變數，如 `task="pose"`                 |
+| `main.py`   | 根據 `config.task` 動態選用 Service 類          |
 | `proto.pose_pb2`  | 定義多個 RPC 方法，如 `PoseFrame`, `GestureFrame` |
 
 ---
