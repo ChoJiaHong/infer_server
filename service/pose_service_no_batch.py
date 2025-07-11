@@ -1,8 +1,8 @@
 import time
 import queue
 from datetime import datetime
-import pose_pb2_grpc
-import pose_pb2
+from proto import pose_pb2_grpc
+from proto import pose_pb2
 from model.batch_worker import BatchWorker
 from processor.single_processor import SingleFrameProcessor
 from utils.logger import logger_context, get_logger

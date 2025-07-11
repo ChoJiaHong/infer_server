@@ -67,7 +67,7 @@ class GesturePostprocessor(Postprocessor):
 若需分別 expose 多個任務，可建立：
 
 ```python
-class GestureDetectionService(pose_pb2_grpc.MirrorServicer):
+class GestureDetectionService(proto.pose_pb2_grpc.MirrorServicer):
     def __init__(self, ...):
         self.preprocessor = GesturePreprocessor()
         self.postprocessor = GesturePostprocessor()
@@ -77,8 +77,8 @@ class GestureDetectionService(pose_pb2_grpc.MirrorServicer):
 然後在 `main.py` 中綁定對應 service：
 
 ```python
-pose_pb2_grpc.add_MirrorServicer_to_server(PoseDetectionService(...), server)
-pose_pb2_grpc.add_MirrorServicer_to_server(GestureDetectionService(...), server)
+proto.pose_pb2_grpc.add_MirrorServicer_to_server(PoseDetectionService(...), server)
+proto.pose_pb2_grpc.add_MirrorServicer_to_server(GestureDetectionService(...), server)
 ```
 
 ---
@@ -89,7 +89,7 @@ pose_pb2_grpc.add_MirrorServicer_to_server(GestureDetectionService(...), server)
 | ----------- | ----------------------------------------- |
 | `config.py` | 加入任務選擇變數，如 `TASK="pose"`                  |
 | `main.py`   | 根據 `config.TASK` 動態選用 Service 類           |
-| `pose_pb2`  | 定義多個 RPC 方法，如 `PoseFrame`, `GestureFrame` |
+| `proto.pose_pb2`  | 定義多個 RPC 方法，如 `PoseFrame`, `GestureFrame` |
 
 ---
 

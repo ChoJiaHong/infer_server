@@ -1,6 +1,6 @@
 from datetime import datetime
-import gesture_pb2_grpc
-import gesture_pb2
+from proto import gesture_pb2_grpc
+from proto import gesture_pb2
 from model.gesture_worker import GestureWorker
 from processor.single_processor import SingleFrameProcessor
 from utils.logger import logger_context, get_logger
