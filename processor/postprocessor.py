@@ -18,7 +18,7 @@ class PosePostprocessor(Postprocessor):
 class GesturePostprocessor(Postprocessor):
     """Convert SSD predictions to gesture JSON."""
 
-    def __init__(self, label_path="gesture_server/voc-model-labels.txt"):
+    def __init__(self, label_path="voc-model-labels.txt"):
         self.class_names = [name.strip() for name in open(label_path).readlines()]
 
     @timing_decorator("Postprocess")

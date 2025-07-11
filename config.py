@@ -45,7 +45,7 @@ class Settings(BaseSettings):
 
     # gesture service options
     enable_gesture: bool = True
-    gesture_weights: str = 'gesture_server/mb1-ssd-best.pth'
-    gesture_label_path: str = 'gesture_server/voc-model-labels.txt'
+    gesture_weights: str = 'mb1-ssd-best.pth'
+    gesture_label_path: str = 'voc-model-labels.txt'
 
 settings = Settings()
