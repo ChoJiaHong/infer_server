@@ -28,5 +28,5 @@ fails to start, the application continues to run without exporting metrics.
 
 
 Metrics from the queue, completion, and RPS monitors are written as separate CSV
-files under `logs/`. Run `python utils/merge_metrics.py` to combine these into
-`logs/merged_stats.csv` for easier analysis.
+files under an automatically created `logs/` directory. Run `python utils/merge_metrics.py`
+to combine these into `logs/merged_stats.csv` for easier analysis.

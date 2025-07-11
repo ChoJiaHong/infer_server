@@ -6,3 +6,6 @@ __pycache__/
 build/
 *.c
 *.so
+
+# Log directories
+logs*/
