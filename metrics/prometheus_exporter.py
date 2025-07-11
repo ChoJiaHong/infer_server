@@ -46,7 +46,7 @@ class PrometheusExporter:
                 "Number of requests completed per second",
             )
 
-            start_http_server(self.port)
+            start_http_server(self.port, addr="0.0.0.0")
             self.enabled = True
             logging.getLogger(__name__).info(
                 "Prometheus exporter running on port %s", self.port
