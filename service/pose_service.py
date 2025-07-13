@@ -5,16 +5,16 @@ from model.batch_worker import BatchWorker
 from processor.batch_processor import BatchProcessor
 from batch_config import BatchConfig, global_batch_config
 from core.request_wrapper import RequestWrapper
-from infra.request_queue import globalRequestQueue  # assume this exists
+from infra.request_queue import RequestQueue
 from utils.logger import logger_context, get_logger
 from processor.preprocessor import PosePreprocessor
 from processor.postprocessor import PosePostprocessor
 from metrics.registry import monitorRegistry
 
 class PoseDetectionService(pose_pb2_grpc.MirrorServicer):
-    def __init__(self, config: BatchConfig = global_batch_config):
+    def __init__(self, request_queue: RequestQueue, config: BatchConfig = global_batch_config):
         self.worker = BatchWorker()
-        self.queue = globalRequestQueue
+        self.queue = request_queue
         self.processor = BatchProcessor(
             worker=self.worker,
             queue=self.queue,
@@ -42,12 +42,12 @@ class PoseDetectionService(pose_pb2_grpc.MirrorServicer):
             wrapper = RequestWrapper(frame)
             wrapper.logger = logger  # 將 logger 傳入 wrapper
             logger.set("receive_ts", wrapper.receive_ts)
-            self.queue.put(wrapper)
+            self.queue.enqueue(wrapper)
             self.logger.info(
                 "Request %s enqueued from %s | size=%d",
                 logger.request_id,
                 client_ip,
-                self.queue.qsize(),
+                self.queue.size(),
             )
 
             try:
