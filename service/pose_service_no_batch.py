@@ -1,64 +1,38 @@
-import time
-import queue
-from datetime import datetime
 from proto import pose_pb2_grpc
 from proto import pose_pb2
 from model.batch_worker import BatchWorker
 from processor.single_processor import SingleFrameProcessor
-from utils.logger import logger_context, get_logger
+from utils.logger import get_logger
 from processor.preprocessor import PosePreprocessor
 from processor.postprocessor import PosePostprocessor
-from metrics.registry import monitorRegistry
 from infra.request_queue import globalRequestQueue  # assume this exists
-class PoseDetectionServiceNoBatch(pose_pb2_grpc.MirrorServicer):
+from .base_service import BaseService
+class PoseDetectionServiceNoBatch(BaseService, pose_pb2_grpc.MirrorServicer):
     """gRPC service that processes each request without batching."""
 
     def __init__(self):
         self.worker = BatchWorker()
-        self.preprocessor = PosePreprocessor()
-        self.postprocessor = PosePostprocessor()
         self.processor = SingleFrameProcessor(self.worker)
         self.logger = get_logger(__name__)
         self.queue = globalRequestQueue
+        super().__init__(PosePreprocessor(), PosePostprocessor())
+
+    def predict(self, frame, logger, client_ip):
+        logger.update({
+            "batch_size": 1,
+            "trigger_type": "single",
+            "trigger_time_ms": 0,
+        })
+        self.queue.put(1)
+        try:
+            return self.processor.predict(frame)
+        finally:
+            if not self.queue.empty():
+                self.queue.get_nowait()
+
+    def build_response(self, processed):
+        return pose_pb2.FrameResponse(skeletons=processed)
 
     def SkeletonFrame(self, request, context):
-        rps = monitorRegistry.get("rps")
-        if rps:
-            rps.increment()
-
-        # enqueue request for queue size monitoring
-        self.queue.put(1)
-
-        client_ip = context.peer().split(":")[-1].replace("ipv4/", "")
-        with logger_context() as logger:
-            logger.set_mark("start")
-            logger.set("client_ip", client_ip)
-            logger.set("receive_ts", datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3])
-            logger.update({
-                "batch_size": 1,
-                "trigger_type": "single",
-                "trigger_time_ms": 0,
-            })
-
-            with logger.phase("preprocess"):
-                frame = self.preprocessor.process(request.image_data)
-
-            with logger.phase("inference"):
-                result = self.processor.predict(frame)
-
-            with logger.phase("postprocess"):
-                processed = self.postprocessor.process(result)
-
-            logger.write()
-
-            completion = monitorRegistry.get("completion")
-            if completion:
-                completion.increment()
-
-            response = pose_pb2.FrameResponse(skeletons=processed)
-
-        if not self.queue.empty():
-            self.queue.get_nowait()
-
-        return response
+        return self.handle_request(request.image_data, context)
 

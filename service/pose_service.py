@@ -6,12 +6,12 @@ from processor.batch_processor import BatchProcessor
 from batch_config import BatchConfig, global_batch_config
 from core.request_wrapper import RequestWrapper
 from infra.request_queue import globalRequestQueue  # assume this exists
-from utils.logger import logger_context, get_logger
+from utils.logger import get_logger
 from processor.preprocessor import PosePreprocessor
 from processor.postprocessor import PosePostprocessor
-from metrics.registry import monitorRegistry
+from .base_service import BaseService
 
-class PoseDetectionService(pose_pb2_grpc.MirrorServicer):
+class PoseDetectionService(BaseService, pose_pb2_grpc.MirrorServicer):
     def __init__(self, config: BatchConfig = global_batch_config):
         self.worker = BatchWorker()
         self.queue = globalRequestQueue
@@ -20,48 +20,30 @@ class PoseDetectionService(pose_pb2_grpc.MirrorServicer):
             queue=self.queue,
             config=config
         )
-        self.preprocessor = PosePreprocessor()
-        self.postprocessor = PosePostprocessor()
         self.logger = get_logger(__name__)
         threading.Thread(target=self.processor.run_forever, daemon=True).start()
+        super().__init__(PosePreprocessor(), PosePostprocessor())
+
+    def predict(self, frame, logger, client_ip):
+        wrapper = RequestWrapper(frame)
+        wrapper.logger = logger
+        logger.set("receive_ts", wrapper.receive_ts)
+        self.queue.put(wrapper)
+        self.logger.info(
+            "Request %s enqueued from %s | size=%d",
+            logger.request_id,
+            client_ip,
+            self.queue.qsize(),
+        )
+        try:
+            result = wrapper.result_queue.get(timeout=2.0)
+        except Exception as e:
+            self.logger.error("Timeout waiting for result for %s: %s", logger.request_id, e)
+            result = None
+        return result
+
+    def build_response(self, processed):
+        return pose_pb2.FrameResponse(skeletons=processed)
 
     def SkeletonFrame(self, request, context):
-        
-        rps = monitorRegistry.get("rps")
-        if rps:
-            rps.increment()
-            
-        client_ip = context.peer().split(":")[-1].replace("ipv4/", "")
-        with logger_context() as logger:
-            logger.set_mark("start")
-            logger.set("client_ip", client_ip)
-
-            with logger.phase("preprocess"):
-                frame = self.preprocessor.process(request.image_data)
-
-            wrapper = RequestWrapper(frame)
-            wrapper.logger = logger  # 將 logger 傳入 wrapper
-            logger.set("receive_ts", wrapper.receive_ts)
-            self.queue.put(wrapper)
-            self.logger.info(
-                "Request %s enqueued from %s | size=%d",
-                logger.request_id,
-                client_ip,
-                self.queue.qsize(),
-            )
-
-            try:
-                result = wrapper.result_queue.get(timeout=2.0)
-                with logger.phase("postprocess"):
-                    processed = self.postprocessor.process(result)
-            except Exception as e:
-                self.logger.error("Timeout waiting for result for %s: %s", logger.request_id, e)
-                processed = ""
-
-            wrapper.logger.write()
-
-            completion = monitorRegistry.get("completion")
-            if completion:
-                completion.increment()
-
-            return pose_pb2.FrameResponse(skeletons=processed)
+        return self.handle_request(request.image_data, context)
