@@ -4,7 +4,6 @@ from proto import pose_pb2
 from model.batch_worker import BatchWorker
 from processor.batch_processor import BatchProcessor
 from batch_config import BatchConfig, global_batch_config
-from core.request_wrapper import RequestWrapper
 from infra.request_queue import globalRequestQueue  # assume this exists
 from utils.logger import logger_context, get_logger
 from processor.preprocessor import PosePreprocessor
@@ -39,26 +38,13 @@ class PoseDetectionService(pose_pb2_grpc.MirrorServicer):
             with logger.phase("preprocess"):
                 frame = self.preprocessor.process(request.image_data)
 
-            wrapper = RequestWrapper(frame)
-            wrapper.logger = logger  # 將 logger 傳入 wrapper
-            logger.set("receive_ts", wrapper.receive_ts)
-            self.queue.put(wrapper)
-            self.logger.info(
-                "Request %s enqueued from %s | size=%d",
-                logger.request_id,
-                client_ip,
-                self.queue.qsize(),
-            )
+            with logger.phase("inference"):
+                result = self.processor.predict(frame, logger, client_ip)
 
-            try:
-                result = wrapper.result_queue.get(timeout=2.0)
-                with logger.phase("postprocess"):
-                    processed = self.postprocessor.process(result)
-            except Exception as e:
-                self.logger.error("Timeout waiting for result for %s: %s", logger.request_id, e)
-                processed = ""
+            with logger.phase("postprocess"):
+                processed = self.postprocessor.process(result) if result is not None else ""
 
-            wrapper.logger.write()
+            logger.write()
 
             completion = monitorRegistry.get("completion")
             if completion:
