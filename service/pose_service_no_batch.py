@@ -9,17 +9,17 @@ from utils.logger import logger_context, get_logger
 from processor.preprocessor import PosePreprocessor
 from processor.postprocessor import PosePostprocessor
 from metrics.registry import monitorRegistry
-from infra.request_queue import globalRequestQueue  # assume this exists
+from infra.request_queue import RequestQueue
 class PoseDetectionServiceNoBatch(pose_pb2_grpc.MirrorServicer):
     """gRPC service that processes each request without batching."""
 
-    def __init__(self):
+    def __init__(self, request_queue: RequestQueue):
         self.worker = BatchWorker()
         self.preprocessor = PosePreprocessor()
         self.postprocessor = PosePostprocessor()
         self.processor = SingleFrameProcessor(self.worker)
         self.logger = get_logger(__name__)
-        self.queue = globalRequestQueue
+        self.queue = request_queue
 
     def SkeletonFrame(self, request, context):
         rps = monitorRegistry.get("rps")
@@ -27,7 +27,7 @@ class PoseDetectionServiceNoBatch(pose_pb2_grpc.MirrorServicer):
             rps.increment()
 
         # enqueue request for queue size monitoring
-        self.queue.put(1)
+        self.queue.enqueue(1)
 
         client_ip = context.peer().split(":")[-1].replace("ipv4/", "")
         with logger_context() as logger:
@@ -58,7 +58,10 @@ class PoseDetectionServiceNoBatch(pose_pb2_grpc.MirrorServicer):
             response = pose_pb2.FrameResponse(skeletons=processed)
 
         if not self.queue.empty():
-            self.queue.get_nowait()
+            try:
+                self.queue.dequeue(block=False)
+            except Exception:
+                pass
 
         return response
 

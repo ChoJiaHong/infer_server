@@ -7,19 +7,19 @@ from utils.logger import logger_context, get_logger
 from processor.preprocessor import GesturePreprocessor
 from processor.postprocessor import GesturePostprocessor
 from metrics.registry import monitorRegistry
-from infra.request_queue import globalRequestQueue
+from infra.request_queue import RequestQueue
 
 
 class GestureDetectionService(gesture_pb2_grpc.GestureRecognitionServicer):
     """gRPC service handling gesture recognition requests."""
 
-    def __init__(self):
+    def __init__(self, request_queue: RequestQueue):
         self.worker = GestureWorker()
         self.preprocessor = GesturePreprocessor()
         self.postprocessor = GesturePostprocessor()
         self.processor = SingleFrameProcessor(self.worker)
         self.logger = get_logger(__name__)
-        self.queue = globalRequestQueue
+        self.queue = request_queue
         self.frame_index = 0
 
     def Recognition(self, request, context):
@@ -27,7 +27,7 @@ class GestureDetectionService(gesture_pb2_grpc.GestureRecognitionServicer):
         if rps:
             rps.increment()
 
-        self.queue.put(1)
+        self.queue.enqueue(1)
         client_ip = context.peer().split(":")[-1].replace("ipv4/", "")
         with logger_context() as logger:
             logger.set_mark("start")
@@ -62,6 +62,9 @@ class GestureDetectionService(gesture_pb2_grpc.GestureRecognitionServicer):
             )
 
         if not self.queue.empty():
-            self.queue.get_nowait()
+            try:
+                self.queue.dequeue(block=False)
+            except Exception:
+                pass
 
         return response

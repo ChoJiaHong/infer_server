@@ -18,12 +18,15 @@ from config import settings
 
 #----------導入註冊服務----------------
 from metrics import registry
-from infra.request_queue import globalRequestQueue
+from infra.request_queue import RequestQueue
 from metrics.registry import monitorRegistry
 from metrics.rps_monitor import RPSMonitor
 from metrics.completion_monitor import CompletionMonitor
 from metrics.queue_monitor import QueueSizeMonitor
 from metrics.prometheus_exporter import PrometheusExporter
+
+# Shared queue for all incoming requests
+request_queue = RequestQueue()
 
 #--------------------------------
 
@@ -41,13 +44,13 @@ def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=300))
     health_pb2_grpc.add_HealthServicer_to_server(HealthServicer(), server)
     pose_pb2_grpc.add_MirrorServicer_to_server(
-        #PoseDetectionService(config=global_batch_config),
-        PoseDetectionServiceNoBatch(),
+        # PoseDetectionService(request_queue, config=global_batch_config),
+        PoseDetectionServiceNoBatch(request_queue),
         server
     )
     if settings.enable_gesture:
         gesture_pb2_grpc.add_GestureRecognitionServicer_to_server(
-            GestureDetectionService(),
+            GestureDetectionService(request_queue),
             server
         )
     server.add_insecure_port('[::]:' + settings.gRPC_port)
@@ -66,7 +69,7 @@ if __name__ == "__main__":
     # metrics/registry.py（繼續）
     monitorRegistry.register(name="rps", instance=RPSMonitor(interval=1.0))
     monitorRegistry.register(name="completion", instance=CompletionMonitor(interval=1.0))
-    monitorRegistry.register(name="queue", instance=QueueSizeMonitor(globalRequestQueue, sample_interval=0.001, report_interval=1.0))
+    monitorRegistry.register(name="queue", instance=QueueSizeMonitor(request_queue, sample_interval=0.001, report_interval=1.0))
     monitorRegistry.register(name="prometheus", instance=PrometheusExporter(port=8001))
     monitorRegistry.start_all()
     #----------------------------------------
