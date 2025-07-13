@@ -42,6 +42,7 @@ class Settings(BaseSettings):
     batch_size: int = 1
     queue_timeout: float = 0.01
     num_workers: int = 1
+    use_batching: bool = True
 
     # gesture service options
     enable_gesture: bool = True

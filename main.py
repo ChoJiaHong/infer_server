@@ -40,9 +40,12 @@ def serve():
     logger = get_logger(__name__)
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=300))
     health_pb2_grpc.add_HealthServicer_to_server(HealthServicer(), server)
+    if settings.use_batching:
+        pose_service = PoseDetectionService(config=global_batch_config)
+    else:
+        pose_service = PoseDetectionServiceNoBatch()
     pose_pb2_grpc.add_MirrorServicer_to_server(
-        #PoseDetectionService(config=global_batch_config),
-        PoseDetectionServiceNoBatch(),
+        pose_service,
         server
     )
     if settings.enable_gesture:

@@ -6,6 +6,12 @@ The admin API is started automatically when running `python main.py`. It exposes
 - `POST /config/batching` with JSON `{ "batch_size": int, "queue_timeout": float }` updates the runtime behavior.
 Standalone mode is still available by running `python admin_api.py`.
 
+## Batching Configuration
+
+The server normally processes frames in batches.  Set `USE_BATCHING` to `False`
+in `config.py` (or via the environment variable of the same name) to use the
+non-batching `PoseDetectionServiceNoBatch` implementation.
+
 ## Building Cython extensions
 
 The postprocessing stage ships with an optional Cython implementation for
