@@ -30,3 +30,7 @@ fails to start, the application continues to run without exporting metrics.
 Metrics from the queue, completion, and RPS monitors are written as separate CSV
 files under an automatically created `logs/` directory. Run `python metrics/merge_metrics.py`
 to combine these into `logs/merged_stats.csv` for easier analysis.
+
+## Docker and Kubernetes
+
+See [docs/deployment_guide.md](docs/deployment_guide.md) for instructions on building the Docker image, example Kubernetes manifests, and enabling Prometheus scraping.
