@@ -6,7 +6,6 @@ import threading
 import uvicorn
 from admin_api import app as admin_app
 
-from service.pose_service import PoseDetectionService
 from service.pose_service_no_batch import PoseDetectionServiceNoBatch
 from service.gesture_service import GestureDetectionService
 from batch_config import global_batch_config
@@ -43,16 +42,19 @@ def serve():
     logger = get_logger(__name__)
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=300))
     health_pb2_grpc.add_HealthServicer_to_server(HealthServicer(), server)
-    pose_pb2_grpc.add_MirrorServicer_to_server(
-        # PoseDetectionService(request_queue, config=global_batch_config),
-        PoseDetectionServiceNoBatch(request_queue),
-        server
-    )
-    if settings.enable_gesture:
+    if settings.service == "pose":
+        pose_pb2_grpc.add_MirrorServicer_to_server(
+            # PoseDetectionService(request_queue, config=global_batch_config),
+            PoseDetectionServiceNoBatch(request_queue),
+            server
+        )
+    elif settings.service == "gesture":
         gesture_pb2_grpc.add_GestureRecognitionServicer_to_server(
             GestureDetectionService(request_queue),
             server
         )
+    else:
+        raise ValueError(f"Unknown service type: {settings.service}")
     server.add_insecure_port('[::]:' + settings.gRPC_port)
     start_admin_api()
     server.start()

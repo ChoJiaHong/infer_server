@@ -43,8 +43,10 @@ class Settings(BaseSettings):
     queue_timeout: float = 0.01
     num_workers: int = 1
 
+    # Service selection: "pose" or "gesture"
+    service: str = 'pose'
+
     # gesture service options
-    enable_gesture: bool = True
     gesture_weights: str = 'mb1-ssd-best.pth'
     gesture_label_path: str = 'voc-model-labels.txt'
 
