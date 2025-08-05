@@ -1,5 +1,3 @@
-import time
-import queue
 from datetime import datetime
 from proto import pose_pb2_grpc
 from proto import pose_pb2
@@ -10,6 +8,9 @@ from processor.preprocessor import PosePreprocessor
 from processor.postprocessor import PosePostprocessor
 from metrics.registry import monitorRegistry
 from infra.request_queue import RequestQueue
+from core.request_dropper import RequestDropper, RequestTimeoutError
+
+
 class PoseDetectionServiceNoBatch(pose_pb2_grpc.MirrorServicer):
     """gRPC service that processes each request without batching."""
 
@@ -18,6 +19,7 @@ class PoseDetectionServiceNoBatch(pose_pb2_grpc.MirrorServicer):
         self.preprocessor = PosePreprocessor()
         self.postprocessor = PosePostprocessor()
         self.processor = SingleFrameProcessor(self.worker)
+        self.dropper = RequestDropper()
         self.logger = get_logger(__name__)
         self.queue = request_queue
 
@@ -28,6 +30,7 @@ class PoseDetectionServiceNoBatch(pose_pb2_grpc.MirrorServicer):
 
         # enqueue request for queue size monitoring
         self.queue.enqueue(1)
+        enqueue_time = self.dropper.mark()
 
         client_ip = context.peer().split(":")[-1].replace("ipv4/", "")
         with logger_context() as logger:
@@ -43,11 +46,15 @@ class PoseDetectionServiceNoBatch(pose_pb2_grpc.MirrorServicer):
             with logger.phase("preprocess"):
                 frame = self.preprocessor.process(request.image_data)
 
-            with logger.phase("inference"):
-                result = self.processor.predict(frame)
-
-            with logger.phase("postprocess"):
-                processed = self.postprocessor.process(result)
+            try:
+                with logger.phase("inference"):
+                    result = self.dropper.run(self.processor.predict, enqueue_time, frame)
+            except RequestTimeoutError:
+                processed = ""
+                logger.update({"dropped": True})
+            else:
+                with logger.phase("postprocess"):
+                    processed = self.postprocessor.process(result)
 
             logger.write()
 
