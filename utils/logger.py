@@ -21,7 +21,7 @@ FIELDNAMES = [
     "request_id", "client_ip", "batch_size",
     "wait_ms", "trigger_type", "trigger_time_ms",
     "inference_ms", "preprocess_ms", "postprocess_ms", "total_ms",
-    "receive_ts", "batch_id", "start_ts", "end_ts"
+    "receive_ts", "batch_id", "start_ts", "end_ts", "dropped"
 ]
 
 class RequestLogger:
@@ -40,6 +40,7 @@ class RequestLogger:
             "batch_id": None,
             "start_ts": datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3],
             "end_ts": "",
+            "dropped": False,
         }
         self.time_ref = {}
         self._start_total = time.time()
@@ -82,7 +83,7 @@ class RequestLogger:
 
         is_new = not os.path.exists(LOG_PATH)
         with open(LOG_PATH, "a", newline="") as f:
-            writer = csv.DictWriter(f, fieldnames=FIELDNAMES)
+            writer = csv.DictWriter(f, fieldnames=FIELDNAMES, extrasaction="ignore")
             if is_new:
                 writer.writeheader()
             writer.writerow(self.fields)
