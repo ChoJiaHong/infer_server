@@ -22,6 +22,6 @@ class SingleFrameProcessor:
         if not acquired:
             raise TimeoutError("timed out waiting for the worker lock")
         try:
-            return self.worker.predict([frame])[0]
+            return self.worker.predict(frame)
         finally:
             self._lock.release()
