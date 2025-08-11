@@ -2,13 +2,13 @@ from datetime import datetime
 from proto import pose_pb2_grpc
 from proto import pose_pb2
 from model.batch_worker import BatchWorker
-from processor.single_processor import SingleFrameProcessor
 from utils.logger import logger_context, get_logger
 from processor.preprocessor import PosePreprocessor
 from processor.postprocessor import PosePostprocessor
 from metrics.registry import monitorRegistry
 from infra.request_queue import RequestQueue
-from core.request_dropper import RequestDropper, RequestTimeoutError
+from core.droppable_processor import DroppableSingleProcessor
+from core.request_dropper import RequestTimeoutError
 
 
 class PoseDetectionServiceNoBatch(pose_pb2_grpc.MirrorServicer):
@@ -18,8 +18,7 @@ class PoseDetectionServiceNoBatch(pose_pb2_grpc.MirrorServicer):
         self.worker = BatchWorker()
         self.preprocessor = PosePreprocessor()
         self.postprocessor = PosePostprocessor()
-        self.processor = SingleFrameProcessor(self.worker)
-        self.dropper = RequestDropper()
+        self.processor = DroppableSingleProcessor(self.worker)
         self.logger = get_logger(__name__)
         self.queue = request_queue
 
@@ -30,7 +29,7 @@ class PoseDetectionServiceNoBatch(pose_pb2_grpc.MirrorServicer):
 
         # enqueue request for queue size monitoring
         self.queue.enqueue(1)
-        enqueue_time = self.dropper.mark()
+        enqueue_time = self.processor.mark()
 
         client_ip = context.peer().split(":")[-1].replace("ipv4/", "")
         with logger_context() as logger:
@@ -48,7 +47,7 @@ class PoseDetectionServiceNoBatch(pose_pb2_grpc.MirrorServicer):
 
             try:
                 with logger.phase("inference"):
-                    result = self.dropper.run(self.processor.predict, enqueue_time, frame)
+                    result = self.processor.predict(frame, enqueue_time)
             except RequestTimeoutError:
                 processed = ""
                 logger.update({"dropped": True})
