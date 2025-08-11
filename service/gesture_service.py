@@ -2,12 +2,13 @@ from datetime import datetime
 from proto import gesture_pb2_grpc
 from proto import gesture_pb2
 from model.gesture_worker import GestureWorker
-from processor.single_processor import SingleFrameProcessor
 from utils.logger import logger_context, get_logger
 from processor.preprocessor import GesturePreprocessor
 from processor.postprocessor import GesturePostprocessor
 from metrics.registry import monitorRegistry
 from infra.request_queue import RequestQueue
+from core.droppable_processor import DroppableSingleProcessor
+from core.request_dropper import RequestTimeoutError
 
 
 class GestureDetectionService(gesture_pb2_grpc.GestureRecognitionServicer):
@@ -17,7 +18,7 @@ class GestureDetectionService(gesture_pb2_grpc.GestureRecognitionServicer):
         self.worker = GestureWorker()
         self.preprocessor = GesturePreprocessor()
         self.postprocessor = GesturePostprocessor()
-        self.processor = SingleFrameProcessor(self.worker)
+        self.processor = DroppableSingleProcessor(self.worker)
         self.logger = get_logger(__name__)
         self.queue = request_queue
         self.frame_index = 0
@@ -28,6 +29,7 @@ class GestureDetectionService(gesture_pb2_grpc.GestureRecognitionServicer):
             rps.increment()
 
         self.queue.enqueue(1)
+        enqueue_time = self.processor.mark()
         client_ip = context.peer().split(":")[-1].replace("ipv4/", "")
         with logger_context() as logger:
             logger.set_mark("start")
@@ -42,11 +44,15 @@ class GestureDetectionService(gesture_pb2_grpc.GestureRecognitionServicer):
             with logger.phase("preprocess"):
                 frame = self.preprocessor.process(request.image)
 
-            with logger.phase("inference"):
-                result = self.processor.predict(frame)
-
-            with logger.phase("postprocess"):
-                action = self.postprocessor.process(result)
+            try:
+                with logger.phase("inference"):
+                    result = self.processor.predict(frame, enqueue_time)
+            except RequestTimeoutError:
+                action = ""
+                logger.update({"dropped": True})
+            else:
+                with logger.phase("postprocess"):
+                    action = self.postprocessor.process(result)
 
             logger.write()
 
